@@ -3,6 +3,8 @@
 ## Description
 A tutorial quiz application to learn Vue.js. The app pulls ten quiz questions from an API and displays them to the user while keeping track of score. The project can be improved to inform the user when a quiz is done.
 
+Deployed here: [https://vue-quiz-app1023.herokuapp.com/]
+
 ## Project setup
 ```
 npm install
