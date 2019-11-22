@@ -2,17 +2,18 @@
     <div class="question-box-container">
       <b-jumbotron>
         <template v-slot:lead>
-          {{ currentQuestion.question }}
+          <!-- {{ currentQuestion.question }} -->
+          <span v-html="currentQuestion.question"></span>
         </template>
 
         <hr class="my-4">
 
         <b-list-group>
           <b-list-group-item
-            v-for="(answer,index) in answers"
+            v-for="(answer,index) in shuffledAnswers"
             :key="index"
             @click="selectAnswer(index)"
-            :class="[selectedIndex === index ? 'selected' : '']"
+            :class="answerClass(index)"
           >
             {{ answer }}
           </b-list-group-item>
@@ -21,6 +22,7 @@
         <b-button 
           variant="primary"
           @click="submitAnswer"
+          :disabled="selectedIndex === null || answered"
         >
           Submit
         </b-button>
@@ -42,7 +44,8 @@ export default {
     return {
       selectedIndex: null,
       correctIndex: null,
-      shuffledAnswers: []
+      shuffledAnswers: [],
+      answered: false
     }
   },
   computed: {
@@ -57,6 +60,7 @@ export default {
       immediate: true,
       handler() {
         this.selectedIndex = null
+        this.answered = false
         this.shuffleAnswers()
       }
     }
@@ -70,6 +74,7 @@ export default {
       if (this.selectedIndex === this.correctIndex) {
         isCorrect = true
       }
+      this.answered = true
 
       this.increment(isCorrect)
     },
@@ -77,6 +82,19 @@ export default {
       let answers = [...this.currentQuestion.incorrect_answers, this.currentQuestion.correct_answer]
       this.shuffledAnswers = _.shuffle(answers)
       this.correctIndex = this.shuffledAnswers.indexOf(this.currentQuestion.correct_answer)
+    },
+    answerClass(index) {
+      let answerClass = ''
+      
+      if (!this.answered && this.selectedIndex === index) {
+        answerClass = 'selected'
+      } else if (this.answered && this.correctIndex === index) {
+        answerClass = 'correct'
+      } else if (this.answered && this.selectedIndex === index && this.correctIndex !== index) {
+        answerClass = 'incorrect'
+      }
+
+      return answerClass
     }
   }
 }
@@ -105,6 +123,6 @@ export default {
 }
 
 .incorrect {
-  background-color: lightcoral
+  background-color: lightcoral;
 }
 </style>
